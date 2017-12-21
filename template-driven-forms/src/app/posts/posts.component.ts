@@ -20,20 +20,19 @@ export class PostsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.service.getPosts()
+    this.service.getAll()
       .subscribe(
-        response => {
-          this.posts = response.json();
-        });
+        posts => this.posts = posts
+        );
   }
 
   createPost(input: HTMLInputElement) {
     let post = { title: input.value };
     input.value = '';
-    this.service.createPost(post)
+    this.service.create(post)
       .subscribe(
-        response => {
-          post['id'] = response.json().id;
+        newPost => {
+          post['id'] = newPost.id;
           this.posts.splice(0,0, post);
       },(error: AppError) => {
           if (error instanceof BadInput) {
@@ -44,17 +43,17 @@ export class PostsComponent implements OnInit {
   }
 
   updatePost(post) {
-    this.service.updatePOst(this.posts)
+    this.service.update(this.posts)
       .subscribe(
-        response => {
-          console.log(response.json());
+        updatedPost => {
+          console.log(updatedPost);
       });
   }
 
   deletePost(post) {
-    this.service.deletePost(345)
+    this.service.delete(post.id)
       .subscribe(
-        response => {
+        () => {
           let index = this.posts.indexOf(post);
           this.posts.splice(index, 1);
           console.log('Item deleted at id', post.id);
